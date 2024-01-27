@@ -1,0 +1,17 @@
+version: "3"
+services:
+  mongod:
+    image: mongo:4.1.13
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: test
+      MONGO_INITDB_ROOT_PASSWORD: test
+    deploy:
+      replicas: 1
+    volumes:
+      - /root/data/mongod:/root/data
+      - /root/logs/mongod:/root/logs
+      - ./mongod.conf:/etc/mongod.conf
+    entrypoint: ["mongod","--config","/etc/mongod.conf"]
+    ports:
+      - 27017:27017
