@@ -8,9 +8,9 @@ import (
 )
 
 type Config struct {
-	DBMySQL string
+	DBMySQL     string
 	DBMySQLTest string
-	MongoDB string
+	MongoDB     string
 }
 
 func init() {
@@ -20,11 +20,10 @@ func init() {
 	}
 }
 
-func GetConfig() *Config {
-	return &Config{
-		DBMySQL: os.Getenv("DB_MYSQL"),
+func GetConfig() Config {
+	return Config{
+		DBMySQL:     os.Getenv("DB_MYSQL"),
 		DBMySQLTest: os.Getenv("DB_MYSQL_TEST"),
-		MongoDB: os.Getenv("MONGODB_URL"),
+		MongoDB:     os.Getenv("MONGODB_URL_USER"),
 	}
-
 }

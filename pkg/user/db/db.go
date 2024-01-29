@@ -4,9 +4,10 @@ import (
 	"context"
 	"gorest/config"
 	"log/slog"
+	"regexp"
 	"strings"
-	"time"
 
+	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -16,11 +17,13 @@ var mongoClient *mongo.Client
 var mongoDbName string
 
 func InitMongoDB() {
+	logs := logrus.New()
+	logs.Formatter = &logrus.JSONFormatter{}
+
 	client, err := mongo.Connect(
 		context.Background(),
-		options.Client().ApplyURI(config.GetConfig().MongoDB),
+		options.Client().ApplyURI(getDbURLOnly(config.GetConfig().MongoDB)),
 		options.Client().SetMaxPoolSize(100),
-		options.Client().SetConnectTimeout(60*time.Second),
 	)
 
 	if err != nil {
@@ -32,6 +35,8 @@ func InitMongoDB() {
 		slog.Error("error Connect MongoDB", "Mongodb Connection error", err.Error())
 		return
 	}
+
+	logs.WithField("db_connection", "success").Info("success connect to mongodb")
 
 	mongoClient = client
 	mongoDbName = getDBnameFromURL(config.GetConfig().MongoDB)
@@ -53,4 +58,12 @@ func getDBnameFromURL(url string) string {
 	} else {
 		return strings.Split(strings.ReplaceAll(url, "//", ""), "/")[1]
 	}
+}
+
+func getDbURLOnly(url string) string {
+	re := regexp.MustCompile(`\/[^/]+$`)
+	result := re.ReplaceAllString(url, "")
+
+	return result
+
 }
