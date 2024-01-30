@@ -6,13 +6,12 @@ import (
 	"fmt"
 	"gorest/pkg/user/domain"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-
 
 type repository struct {
 	conn   *mongo.Client
@@ -133,7 +132,7 @@ func (r *repository) GetAllUser(ctx context.Context) ([]domain.User, error) {
 
 	return users, nil
 }
-func (r *repository) GetUserById(ctx context.Context, id string) (*domain.User, error) {
+func (r *repository) GetUserById(ctx context.Context, id uuid.UUID) (*domain.User, error) {
 	var user domain.User
 
 	err := r.db.Collection(userColl).FindOne(ctx, bson.D{{Key: "_id", Value: id}}).Decode(&user)
@@ -181,7 +180,7 @@ func (r *repository) DeleteOneUser(ctx context.Context, user domain.User) (*doma
 
 	return &deletedDoc, nil
 }
-func (r *repository) DeleteManyUser(ctx context.Context, ids []string) (int, error) {
+func (r *repository) DeleteManyUser(ctx context.Context, ids []uuid.UUID) (int, error) {
 	filter := bson.D{{
 		Key: "_id",
 		Value: bson.D{{
@@ -200,3 +199,4 @@ func (r *repository) DeleteManyUser(ctx context.Context, ids []string) (int, err
 
 	return int(del.DeletedCount), nil
 }
+

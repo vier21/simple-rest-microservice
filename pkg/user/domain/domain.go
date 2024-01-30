@@ -1,9 +1,13 @@
 package domain
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type User struct {
-	Id        string    `json:"id,omitempty" bson:"_id"`
+	Id        uuid.UUID `json:"id,omitempty" bson:"_id"`
 	Username  string    `bson:"userName,omitempty"`
 	FirstName string    `bson:"firstName,omitempty"`
 	LastName  string    `bson:"lastName,omitempty"`

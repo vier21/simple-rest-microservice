@@ -24,7 +24,7 @@ func init() {
 func generateUsers() []domain.User {
 	return []domain.User{
 		{
-			Id:        uuid.NewString(),
+			Id:        uuid.New(),
 			Username:  "AAAAA2",
 			FirstName: "AAAA@",
 			LastName:  "SDADSDA",
@@ -34,7 +34,7 @@ func generateUsers() []domain.User {
 			Role:      "Admin",
 		},
 		{
-			Id:        uuid.NewString(),
+			Id:        uuid.New(),
 			Username:  utils.RandomString(5),
 			FirstName: utils.RandomString(5),
 			LastName:  utils.RandomString(5),
@@ -44,7 +44,7 @@ func generateUsers() []domain.User {
 			Role:      "user",
 		},
 		{
-			Id:        uuid.NewString(),
+			Id:        uuid.New(),
 			Username:  utils.RandomString(5),
 			FirstName: utils.RandomString(5),
 			LastName:  utils.RandomString(5),
@@ -57,7 +57,7 @@ func generateUsers() []domain.User {
 }
 func TestInsertOneUser(t *testing.T) {
 	usr := domain.User{
-		Id:        uuid.NewString(),
+		Id:        uuid.New(),
 		Username:  "abe123",
 		FirstName: "abee",
 		LastName:  "cekut",
@@ -68,10 +68,9 @@ func TestInsertOneUser(t *testing.T) {
 	}
 
 	user, err := testRepo.InsertOneUser(context.Background(), usr)
-	if err != nil {
-		t.Error()
-	}
+	fmt.Println(user)
 
+	assert.Nil(t, err)
 	assert.NotNil(t, user)
 	assert.Equal(t, usr, *user)
 }
@@ -90,16 +89,24 @@ func TestInsertManyUser(t *testing.T) {
 }
 
 func TestUpdateOneUser(t *testing.T) {
-	updatePayload := domain.User{
-		Id:        "6ecd35f5-f127-4908-9f50-b6c764cea7db",
+	newUsr := domain.User{
+		Id:        uuid.New(),
 		Username:  "leon1123",
 		FirstName: "Maxf",
 	}
+	usr, _ := testRepo.InsertOneUser(context.TODO(), newUsr)
+	assert.Equal(t, newUsr.Username, usr.Username)
+
+	updatePayload := domain.User{
+		Id:        newUsr.Id,
+		Username:  "Maxim",
+		FirstName: "Maxf2",
+	}
+
 	upd, err := testRepo.UpdateOneUser(context.Background(), updatePayload)
 
-	if err != nil {
-		t.Fail()
-	}
+	assert.Nil(t, err)
+	assert.Equal(t, "Maxim", upd.Username)
 
 	fmt.Println(*upd)
 }
@@ -107,21 +114,20 @@ func TestUpdateOneUser(t *testing.T) {
 func TestGetAllUser(t *testing.T) {
 	users, err := testRepo.GetAllUser(context.Background())
 
-	if err != nil {
-		t.Fail()
-	}
-
+	assert.Nil(t, err)
 	fmt.Println(users)
 }
 
 func TestGetUserById(t *testing.T) {
-	user, err := testRepo.GetUserById(context.Background(), "f7d75cbe-2fc3-4799-9274-8b2d4d5bbee2")
+	userD := generateUsers()[2]
+	usr, _ := testRepo.InsertOneUser(context.Background(), userD)
+	fmt.Println(usr.Id.String())
+	user, err := testRepo.GetUserById(context.Background(), usr.Id)
 
-	if err != nil {
-		t.Fail()
-	}
-
-	assert.Equal(t, "abe123", user.Username)
+	fmt.Println(*user)
+	fmt.Printf("type of %T", user.Id)
+	assert.Nil(t, err)
+	assert.Equal(t, usr.Username, user.Username)
 }
 
 func TestDeleteOne(t *testing.T) {
@@ -142,7 +148,7 @@ func TestDeleteMany(t *testing.T) {
 
 	usrs, _ := testRepo.InsertManyUser(context.TODO(), users)
 
-	ids := make([]string, len(usrs))
+	ids := make([]uuid.UUID, len(usrs))
 
 	for i, v := range usrs {
 		ids[i] = v.Id
@@ -153,3 +159,5 @@ func TestDeleteMany(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEqual(t, 0, delUsers)
 }
+
+func AggregateMatchUser(ctx context.Context,)

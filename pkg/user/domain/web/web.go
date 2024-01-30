@@ -3,34 +3,111 @@ package web
 import (
 	"gorest/pkg/user/domain"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type RegisterRequest struct {
+	Id        uuid.UUID `json:"id,omitempty"`
 	Username  string    `json:"userName" validate:"required"`
 	FirstName string    `json:"firstName" validate:"required"`
 	LastName  string    `json:"lastName" validate:"required"`
-	Email     string    `json:"emial" validate:"email,required"`
+	Email     string    `json:"email" validate:"email,required"`
 	Password  string    `json:"password" validate:"required"`
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	Role      string    `json:"role,omitempty"`
 }
 
-type UserResponse struct {
-	Username  string    `json:"userName" validate:"required"`
-	FirstName string    `json:"firstName" validate:"required"`
-	LastName  string    `json:"lastName" validate:"required"`
-	Email     string    `json:"emial" validate:"email,required"`
-	CreatedAt time.Time `json:"createdAt,omitempty"`
-	Role      string    `json:"role,omitempty"`
+type RegisterRequests []RegisterRequest
+
+func ToUserDomains(regs RegisterRequests) []domain.User {
+	uDomains := make([]domain.User, len(regs))
+	for k, v := range regs {
+		uDomains[k].Id = v.Id
+		uDomains[k].Username = v.Username
+		uDomains[k].FirstName = v.FirstName
+		uDomains[k].LastName = v.LastName
+		uDomains[k].Email = v.Email
+		uDomains[k].Password = v.Password
+		uDomains[k].CreatedAt = v.CreatedAt
+		uDomains[k].Role = v.Role
+	}
+
+	return uDomains
 }
 
-func ToUserResponse(user *domain.User) *UserResponse {
-	return &UserResponse{
+func ToUserDomain(reg RegisterRequest) domain.User {
+	return domain.User{
+		Id:        reg.Id,
+		Username:  reg.Username,
+		FirstName: reg.FirstName,
+		LastName:  reg.LastName,
+		Email:     reg.Email,
+		Password:  reg.Password,
+		CreatedAt: reg.CreatedAt,
+		Role:      reg.Role,
+	}
+}
+
+type UserResponse struct {
+	Id        uuid.UUID `json:"id"`
+	Username  string    `json:"userName"`
+	FirstName string    `json:"firstName"`
+	LastName  string    `json:"lastName"`
+	Email     string    `json:"email"`
+	Role      string    `json:"role"`
+}
+
+func ToUserResponse(user domain.User) UserResponse {
+	return UserResponse{
+		Id:        user.Id,
 		Username:  user.Username,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Email:     user.Email,
-		CreatedAt: user.CreatedAt,
 		Role:      user.Role,
 	}
 }
+
+func ToUserResponses(users []domain.User) UserResponses {
+	uResponses := make(UserResponses, len(users))
+	for k, v := range users {
+		uResponses[k].Id = v.Id
+		uResponses[k].Username = v.Username
+		uResponses[k].FirstName = v.FirstName
+		uResponses[k].LastName = v.LastName
+		uResponses[k].Email = v.Email
+		uResponses[k].Role = v.Role
+	}
+
+	return uResponses
+}
+
+type UpdateRequest struct {
+	Username  string `json:"userName,omitempty" validate:"required"`
+	FirstName string `json:"firstName,omitempty" validate:"required"`
+	LastName  string `json:"lastName,omitempty" validate:"required"`
+	Email     string `json:"email,omitempty" validate:"email,required"`
+	Password  string `json:"password,omitempty" validate:"required"`
+	Role      string `json:"role,omitempty"`
+}
+
+func ToUpdateDomain(upd UpdateRequest) domain.User {
+	return domain.User{
+		Username:  upd.Username,
+		FirstName: upd.FirstName,
+		LastName:  upd.LastName,
+		Email:     upd.Email,
+		Password:  upd.Password,
+		Role:      upd.Role,
+	}
+}
+
+
+type ResponsePayload struct {
+	Code   int    `json:"code"`
+	Status string `json:"status"`
+	Data   any    `json:"data"`
+}
+
+type UserResponses []UserResponse
