@@ -18,19 +18,19 @@ type RegisterRequest struct {
 	Role      string    `json:"role,omitempty"`
 }
 
-type RegisterRequests []RegisterRequest
+type RegisterRequests []RegisterRequest 
 
 func ToUserDomains(regs RegisterRequests) []domain.User {
 	uDomains := make([]domain.User, len(regs))
-	for k, v := range regs {
-		uDomains[k].Id = v.Id
-		uDomains[k].Username = v.Username
-		uDomains[k].FirstName = v.FirstName
-		uDomains[k].LastName = v.LastName
-		uDomains[k].Email = v.Email
-		uDomains[k].Password = v.Password
-		uDomains[k].CreatedAt = v.CreatedAt
-		uDomains[k].Role = v.Role
+	for i := range regs {
+		uDomains[i].Id = regs[i].Id
+		uDomains[i].Username = regs[i].Username
+		uDomains[i].FirstName = regs[i].FirstName
+		uDomains[i].LastName = regs[i].LastName
+		uDomains[i].Email = regs[i].Email
+		uDomains[i].Password = regs[i].Password
+		uDomains[i].CreatedAt = regs[i].CreatedAt
+		uDomains[i].Role = regs[i].Role
 	}
 
 	return uDomains

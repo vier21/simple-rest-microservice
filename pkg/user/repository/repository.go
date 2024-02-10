@@ -199,4 +199,3 @@ func (r *repository) DeleteManyUser(ctx context.Context, ids []uuid.UUID) (int, 
 
 	return int(del.DeletedCount), nil
 }
-
