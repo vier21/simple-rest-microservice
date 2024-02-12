@@ -1,2 +1,4 @@
 .env
 cmd/test
+key
+pkg/auth/service/key

@@ -1,7 +1,9 @@
 package config
 
 import (
+	"crypto/rsa"
 	"fmt"
+	"gorest/config/keys"
 	"log"
 	"os"
 	"strings"
@@ -18,6 +20,8 @@ type Config struct {
 	RedisCli       string
 	KID            string
 	TokenTimeout   string
+	PrivateKey     *rsa.PrivateKey
+	PublicKey      *rsa.PublicKey
 }
 
 func init() {
@@ -36,7 +40,7 @@ func init() {
 	rootPath := strings.TrimSuffix(path, "/config")
 	if err := os.Setenv("APP_PATH", rootPath); err != nil {
 		log.Println(err)
-		return 	
+		return
 	}
 
 }
@@ -50,5 +54,7 @@ func GetConfig() Config {
 		MongoAuthDB:    os.Getenv("MONGODB_URL_AUTH"),
 		KID:            os.Getenv("KID"),
 		TokenTimeout:   os.Getenv("TOKEN_EXPIRATION"),
+		PrivateKey:     keys.LoadPrivateKey(),
+		PublicKey:      keys.LoadPublicKey(),
 	}
 }
